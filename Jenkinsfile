@@ -1,7 +1,7 @@
 def FAILED_STAGE
 
 pipeline {
-   agent { label "main" }
+   agent any
   
    environment {
        DOCKER_HUB_REPO = "siddmi0407/flask-hello-world"
