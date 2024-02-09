@@ -47,7 +47,10 @@ pipeline {
                script {
                    FAILED_STAGE=env.STAGE_NAME
                    echo 'Deploying....'
-                   kubernetesDeploy(configs: "deployment.yaml", "service.yaml")
+                   sh 'scp -r -o StrictHostKeyChecking=no deployment.yaml service.yaml flask-hello-deployment-78996cd57c-2dpsm@10.102.251.174:~/'
+            
+                   sh 'ssh flask-hello-deployment-78996cd57c-2dpsm<10.102.251.174 kubectl apply -f ~/deployment.yaml'
+                   sh 'ssh flask-hello-deployment-78996cd57c-2dpsm<10.102.251.174 kubectl apply -f ~/service.yaml'
                }
            }
        }
