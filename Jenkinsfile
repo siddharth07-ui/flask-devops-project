@@ -47,8 +47,7 @@ pipeline {
                script {
                    FAILED_STAGE=env.STAGE_NAME
                    echo 'Deploying....'
-                   sh 'minikube kubectl -- apply -f deployment.yaml'
-                   sh 'minikube kubectl -- apply -f service.yaml'
+                   kubernetesDeploy(configs: "deployment.yaml", "service.yaml")
                }
            }
        }
