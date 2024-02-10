@@ -1,51 +1,39 @@
-def FAILED_STAGE
-
 pipeline {
-   agent any
+   agent agent1
   
    environment {
        DOCKER_HUB_REPO = "siddmi0407/flask-hello-world"
        CONTAINER_NAME = "flask-hello-world"
-       DOCKERHUB_CREDENTIALS=credentials('dockerhub')
+ 
    }
   
    stages {
-       /* We do not need a stage for checkout here since it is done by default when using "Pipeline script from SCM" option. */
-      
+       stage('Checkout') {
+           steps {
+               checkout([$class: 'GitSCM', branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/siddharth07-ui/flask-devops-project.git']]])
+           }
+       }
        stage('Build') {
            steps {
-               script {
-                   FAILED_STAGE=env.STAGE_NAME
-                   echo 'Building..'
-                   sh 'docker image build -t $DOCKER_HUB_REPO:latest .'
-               }
+               echo 'Building..'
+               sh 'docker image build -t $DOCKER_HUB_REPO:latest .'
            }
        }
        stage('Test') {
            steps {
-               script {
-                   FAILED_STAGE=env.STAGE_NAME
-                   echo 'Testing..'
-                   sh 'docker stop $CONTAINER_NAME || true'
-                   sh 'docker rm $CONTAINER_NAME || true'
-                   sh 'docker run --name $CONTAINER_NAME $DOCKER_HUB_REPO /bin/bash -c "pytest test.py && flake8"'
-               }
+               echo 'Testing..'
+               sh 'docker stop $CONTAINER_NAME || true'
+               sh 'docker rm $CONTAINER_NAME || true'
+               sh 'docker run --name $CONTAINER_NAME $DOCKER_HUB_REPO /bin/bash -c "pytest test.py && flake8"'
            }
        }
-       stage('Push') {
+       stage('Deploy') {
            steps {
-               script {
-                   FAILED_STAGE=env.STAGE_NAME
-                   echo 'Pushing image..'
-                   sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
-                   sh 'docker push $DOCKER_HUB_REPO:latest'
-               }
+               echo 'Deploying....'
+               sh 'docker stop $CONTAINER_NAME || true'
+               sh 'docker rm $CONTAINER_NAME || true'
+               sh 'docker run -d -p 5000:5000 --name $CONTAINER_NAME $DOCKER_HUB_REPO'
            }
        }
    }
-   post {
-        failure {
-            echo "Failed stage name: ${FAILED_STAGE}"
-        }
-    }
 }
