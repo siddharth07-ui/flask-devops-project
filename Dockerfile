@@ -1,5 +1,6 @@
-FROM python:3.8
-COPY . /app/
+FROM python:3.8-alpine
+COPY app.py test.py /app/
 WORKDIR /app
-RUN pip install flask pytest flake8
+ENV PIP_ROOT_USER_ACTION=ignore
+RUN pip --disable-pip-version-check install --user flask pytest flake8
 CMD ["python", "app.py"]
