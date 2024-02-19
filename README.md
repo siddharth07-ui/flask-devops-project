@@ -74,3 +74,68 @@
 ##    }
 ## }
 
+# Installed minikube on local computer (Ubuntu) using below link -
+## https://minikube.sigs.k8s.io/docs/start/
+
+# Adding 'deployment.yaml' and 'service.yaml' file to project using below logic -
+
+## Create a new file named "deployment.yaml" in your project and add the below code.
+## 
+## apiVersion: apps/v1
+## kind: Deployment
+## metadata:
+##  name: flask-hello-deployment # name of the deployment
+##  
+## spec:
+##  template: # pod defintion
+##    metadata:
+##      name: flask-hello # name of the pod
+##      labels:
+##        app: flask-hello
+##        tier: frontend
+##    spec:
+##      containers:
+##        - name: flask-hello
+##          image: shivammitra/flask-hello-world:latest
+##  replicas: 3
+##  selector: # Mandatory, Select the pods which needs to be in the replicaset
+##    matchLabels:
+##      app: flask-hello
+##      tier: frontend
+## 
+## Test the deployment manually by running the following command:
+## 
+## $ kubectl apply -f deployment.yaml
+## deployment.apps/flask-hello-deployment created
+## $ kubectl get deployments flask-hello-deployment
+## NAME                     READY   UP-TO-DATE   AVAILABLE   AGE
+## flask-hello-deployment   3/3     3            3           45s
+## 
+## Create a new file named "service.yaml" and add the following code
+## 
+## apiVersion: v1
+## kind: Service
+## metadata:
+##  name: flask-hello-service-nodeport # name of the service
+##  
+## spec:
+##  type: NodePort # Used for accessing a port externally
+##  ports:
+##    - port: 5000 # Service port
+##      targetPort: 5000 # Pod port, default: same as port
+##      nodePort: 30008 # Node port which can be used externally, default: auto-assign any free port
+##  selector: # Which pods to expose externally ?
+##    app: flask-hello
+##    tier: frontend
+## 
+## Test the service manually by running below commands.
+## 
+## $ kubectl apply -f service.yaml
+## service/flask-hello-service-nodeport created
+## $ kubectl get service flask-hello-service-nodeport
+## NAME                           TYPE       CLUSTER-IP     EXTERNAL-IP   PORT(S)          AGE
+## flask-hello-service-nodeport   NodePort   10.110.46.59   <none>        5000:30008/TCP   36s
+## 
+## Run below command to access the application on the browser.
+## 
+## minikube service flask-hello-service-nodeport
