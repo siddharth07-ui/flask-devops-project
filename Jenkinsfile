@@ -1,5 +1,5 @@
 pipeline {
-   agent { label 'agent1' }
+   agent { label 'Ubuntu-node' }
   
    environment {
        DOCKER_HUB_REPO = "siddmi0407/flask-hello-world"
@@ -8,21 +8,32 @@ pipeline {
    }
   
    stages {
-       /* We do not need a stage for checkout here since it is done by default when using the "Pipeline script from SCM" option. */
-      
- 
+    /* We do not need a stage for checkout here since it is done by default when using the "Pipeline script from SCM" option. */
+    //    stage('Checkout') {
+    //        steps {
+    //            checkout([$class: 'GitSCM', branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/siddharth07-ui/flask-devops-project.git']]])
+    //        }
+    //    }
        stage('Build') {
            steps {
                echo 'Building..'
                sh 'docker image build -t $DOCKER_HUB_REPO:latest .'
            }
        }
-       stage('Test') {
+       stage('Testing 1 - Pytest') {
            steps {
                echo 'Testing..'
                sh 'docker stop $CONTAINER_NAME || true'
                sh 'docker rm $CONTAINER_NAME || true'
-               sh 'docker run --name $CONTAINER_NAME $DOCKER_HUB_REPO /bin/bash -c "pytest test.py && flake8"'
+               sh 'docker run --name $CONTAINER_NAME $DOCKER_HUB_REPO python -m pytest test.py'
+           }
+       }
+       stage('Testing 2 - Flake8') {
+           steps {
+               echo 'Testing..'
+               sh 'docker stop $CONTAINER_NAME || true'
+               sh 'docker rm $CONTAINER_NAME || true'
+               sh 'docker run --name $CONTAINER_NAME $DOCKER_HUB_REPO python -m flake8'
            }
        }
        stage('Deploy') {
