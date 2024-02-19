@@ -9,12 +9,7 @@ pipeline {
    }
   
    stages {
-    /* We do not need a stage for checkout here since it is done by default when using the "Pipeline script from SCM" option. */
-    //    stage('Checkout') {
-    //        steps {
-    //            checkout([$class: 'GitSCM', branches: [[name: '*/main']], extensions: [], userRemoteConfigs: [[url: 'https://github.com/siddharth07-ui/flask-devops-project.git']]])
-    //        }
-    //    }
+        /* We do not need a stage for checkout here since it is done by default when using the "Pipeline script from SCM" option. */
        stage('Build') {
            steps {
                echo 'Building..'
@@ -35,14 +30,6 @@ pipeline {
                sh 'docker stop $CONTAINER_NAME || true'
                sh 'docker rm $CONTAINER_NAME || true'
                sh 'docker run --name $CONTAINER_NAME $DOCKER_HUB_REPO python -m flake8'
-           }
-       }
-       stage('Deploy') {
-           steps {
-               echo 'Deploying....'
-               sh 'docker stop $CONTAINER_NAME || true'
-               sh 'docker rm $CONTAINER_NAME || true'
-               sh 'docker run -d -p 5000:5000 --name $CONTAINER_NAME $DOCKER_HUB_REPO'
            }
        }
        stage('Deploy') {
