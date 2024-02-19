@@ -24,7 +24,7 @@
 ## [Install]
 ## WantedBy=multi-user.target
 
-## Updated pipeline script for my docker image -
+## Updated pipeline script from SCM for my docker image in Jenkins -
 
 ## pipeline {
 ##    agent { label 'Ubuntu-node' }
