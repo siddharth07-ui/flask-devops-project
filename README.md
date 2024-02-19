@@ -139,3 +139,12 @@
 ## Run below command to access the application on the browser.
 ## 
 ## minikube service flask-hello-service-nodeport
+
+## Pushed above files to github using below steps - 
+## git add .
+## git commit -m "Add kubernetes deployment and service yaml"
+## git push origin main
+
+## Created dockerhub credential on jenkins page
+## Updated Jenkinsfile to current jenkinsfile content
+## Using "build now" successfully created pipeline
